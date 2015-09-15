@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang='en'>
+<head>
+	<script type="text/javascript" src="js/Common/webgl-utils.js"></script>
+	<script type="text/javascript" src="js/Common/initShaders.js"></script>
+	<script type="text/javascript" src="js/Common/MV.js"></script>
+	<script type="text/javascript" src="js/THREEx.KeyboardState.js"></script>
+	<script type="text/javascript" src="js/camera.js"></script>
+	<script type="text/javascript" src="js/geometryTools.js"></script>
+	<script type="text/javascript" src="js/sphereGeometry.js"></script>
+	<script type="text/javascript" src="js/scenegraph.js"></script>
+	<script type="text/javascript" src="js/scenegraphexample.js"></script>
+
+	<script id="vertex-shader" type="x-shader/x-vertex">
+		attribute  vec4 vPosition;
+
+		uniform mat4 ModelViewProjection;
+
+		void main()
+		{
+			gl_Position = ModelViewProjection * vPosition;
+		}
+
+	</script>
+	<script id="fragment-shader" type="x-shader/x-fragment">
+		precision mediump float;
+
+		uniform vec4 Color;
+
+		void main()
+		{
+			gl_FragColor = Color;
+		}
+	</script>
+</head>
+<body>
+	<canvas id='canvas' width="512" height="512">
+		Oops ... your browser doesn't support the HTML5 canvas element
+	</canvas>
+</body>
+</html>
