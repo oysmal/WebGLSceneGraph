@@ -15,10 +15,14 @@
 		attribute  vec4 vPosition;
 
 		uniform mat4 ModelViewProjection;
+		uniform mat4 WorldMatrix;
+
+		varying float factor;
 
 		void main()
 		{
-			gl_Position = ModelViewProjection * vPosition;
+			factor = vPosition.x;
+			gl_Position = ModelViewProjection * WorldMatrix * vPosition;
 		}
 
 	</script>
@@ -27,9 +31,12 @@
 
 		uniform vec4 Color;
 
+		varying float factor;
+
 		void main()
 		{
-			gl_FragColor = Color;
+			vec4 m = vec4(0.5,0.5,0.5,1.0);
+			gl_FragColor = Color*factor+m;
 		}
 	</script>
 </head>

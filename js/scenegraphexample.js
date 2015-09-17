@@ -24,6 +24,7 @@ window.onload = function init() {
     //
 
     camera.setPosition(vec3(0, 5, -3));
+    camera.forwardDirection = subtract(vec3(0,0,0), camera.position);
 
     //var Projection = ortho(-10, 10, -10, 10, -10, 10);
     var Projection = perspective(60, canvas.width/canvas.height, 0.01, 1000);
@@ -34,7 +35,6 @@ window.onload = function init() {
     var sphereData = generateSphere(16, 16);
     var sphereNode1 = new SceneNode(scene);	// scene as parent
     sphereNode1.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode1
-    sphereNode1.translate([0,0,0]);
 
     // Create another sphereNode using the same data, and set it as a child of the first sphere
     var sphereNode2 = new SceneNode(sphereNode1);
@@ -64,6 +64,7 @@ window.onload = function init() {
 
     var ModelViewProjectionLocation = gl.getUniformLocation(program, "ModelViewProjection");
     var ColorLocation = gl.getUniformLocation(program, "Color");
+    var WorldMatLocation = gl.getUniformLocation(program, "WorldMatrix");
 
     /* Load the data into the GPU in 2 separate buffers*/
 
@@ -147,24 +148,28 @@ window.onload = function init() {
         View = camera.getViewMatrix();
         var MVP = mult(Projection, View);
 
+
+        sphereNode1.rotateSelf((3600/60*diffSeconds), [0,1,0]);
+        sphereNode2.rotateSelf((36000/60*diffSeconds), [0,1,0]);
+        sphereNode3.rotateSelf((36000   /60*diffSeconds), [0,1,0]);
         sphereNode2.rotate((3600/60*diffSeconds), [0,1,0]);
         sphereNode3.rotate((3600/60*diffSeconds*4), [0,1,0]);
 
         // Load the MVP matrix into the scene and update all nodes.
-        scene.localMatrix = MVP;
+        //scene.localMatrix = MVP;
         scene.updateWorldMatrix();
 
         console.log(SceneNode.getDrawableNodes().length);
 
-        render(SceneNode.getDrawableNodes(), ModelViewProjectionLocation, ColorLocation);
+        render(SceneNode.getDrawableNodes(), ModelViewProjectionLocation, ColorLocation, WorldMatLocation, MVP);
 
         window.requestAnimationFrame(step);
     });
 
 
-};
+}
 
-function render(drawableObjects, mvpLocation, colorLocation) {
+function render(drawableObjects, mvpLocation, colorLocation, worldMatLocation, MVP) {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     drawableObjects.forEach(function(object) {
@@ -174,7 +179,8 @@ function render(drawableObjects, mvpLocation, colorLocation) {
     	gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
    		gl.enableVertexAttribArray(vPosition);
 
-        gl.uniformMatrix4fv(mvpLocation, false, flatten(object.worldMatrix));
+        gl.uniformMatrix4fv(mvpLocation, false, flatten(MVP));
+        gl.uniformMatrix4fv(worldMatLocation, false, flatten(object.worldMatrix));      // Pass the world matrix of the current object to the shader.
         gl.uniform4fv(colorLocation, new Float32Array(object.drawInfo.uniformInfo.color));
         gl.drawArrays(gl.TRIANGLES, 0, object.drawInfo.bufferInfo.numVertices);
     });
