@@ -84,7 +84,7 @@ window.onload = function init() {
     //
     // Add drawinfo to the SceneNodes
     //
-    var drawInfo1 = {
+    sphereNode1.addDrawable({
     	bufferInfo: {
         	buffer: buffer1,
         	numVertices: sphereData.numVertices
@@ -94,11 +94,13 @@ window.onload = function init() {
             color: vec4(1, 0, 0, 1)
         },
         programInfo: {
-        	program: program
+        	program: program,
+            worldMatLocation: WorldMatLocation,
+            colorLocation: ColorLocation
         }
-    };
+    });
 
-    var drawInfo2 = {
+    sphereNode2.addDrawable({
     	bufferInfo: {
         	buffer: buffer2,
         	numVertices: sphereData.numVertices
@@ -108,11 +110,13 @@ window.onload = function init() {
             color: vec4(0, 1, 0, 1)
         },
         programInfo: {
-        	program: program
+        	program: program,
+            worldMatLocation: WorldMatLocation,
+            colorLocation: ColorLocation
         }
-    };
+    });
 
-    var drawInfo3 = {
+    sphereNode3.addDrawable({
     	bufferInfo: {
         	buffer: buffer3,
         	numVertices: sphereData.numVertices
@@ -122,13 +126,13 @@ window.onload = function init() {
             color: vec4(0, 0, 1, 1)
         },
         programInfo: {
-        	program: program
+        	program: program,
+            worldMatLocation: WorldMatLocation,
+            colorLocation: ColorLocation
         }
-    };
+    });
 
-    sphereNode1.addDrawable(drawInfo1);	// This is going to be a drawable node, so we add the drawInfo.
-    sphereNode2.addDrawable(drawInfo2);	// This is going to be a drawable node, so we add the drawInfo.
-    sphereNode3.addDrawable(drawInfo3);	// This is going to be a drawable node, so we add the drawInfo.
+    
 
 
     //
@@ -171,17 +175,19 @@ window.onload = function init() {
 
 function render(drawableObjects, mvpLocation, colorLocation, worldMatLocation, MVP) {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.uniformMatrix4fv(mvpLocation, false, flatten(MVP));
 
     drawableObjects.forEach(function(object) {
-        gl.useProgram(object.drawInfo.programInfo.program);
-		gl.bindBuffer(gl.ARRAY_BUFFER, object.drawInfo.bufferInfo.buffer);
-		var vPosition = gl.getAttribLocation(object.drawInfo.programInfo.program, "vPosition");
-    	gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
-   		gl.enableVertexAttribArray(vPosition);
+  //       gl.useProgram(object.drawInfo.programInfo.program);
+		// gl.bindBuffer(gl.ARRAY_BUFFER, object.drawInfo.bufferInfo.buffer);
+		// var vPosition = gl.getAttribLocation(object.drawInfo.programInfo.program, "vPosition");
+  //   	gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
+  //  		gl.enableVertexAttribArray(vPosition);
 
-        gl.uniformMatrix4fv(mvpLocation, false, flatten(MVP));
-        gl.uniformMatrix4fv(worldMatLocation, false, flatten(object.worldMatrix));      // Pass the world matrix of the current object to the shader.
-        gl.uniform4fv(colorLocation, new Float32Array(object.drawInfo.uniformInfo.color));
-        gl.drawArrays(gl.TRIANGLES, 0, object.drawInfo.bufferInfo.numVertices);
+  //       gl.uniformMatrix4fv(worldMatLocation, false, flatten(object.worldMatrix));      // Pass the world matrix of the current object to the shader.
+  //       gl.uniform4fv(colorLocation, new Float32Array(object.drawInfo.uniformInfo.color));
+  //       gl.drawArrays(gl.TRIANGLES, 0, object.drawInfo.bufferInfo.numVertices);
+
+        renderDrawable(object);
     });
 }
