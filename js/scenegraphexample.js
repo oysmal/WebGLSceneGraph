@@ -31,6 +31,8 @@ window.onload = function init() {
     var View = camera.getViewMatrix();
 
 
+    // SCENE GRAPH CODE
+
     //Create the sphere and add it to the scene graph
     var sphereData = generateSphere(16, 16);
     var sphereNode1 = new SceneNode(scene);	// scene as parent
@@ -41,12 +43,7 @@ window.onload = function init() {
     sphereNode2.translate([6,0,0]); // Translate relative to sphereNode 1.
     sphereNode2.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode1
 
-
-    // Create another sphereNode using the same data, and set it as a child of the second sphere
-    var sphereNode3 = new SceneNode(sphereNode2);
-    sphereNode3.translate([3,0,0]); // Translate relative to sphereNode 2.
-    sphereNode3.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode2
-
+    
     //
     //  Configure WebGL
     //
@@ -55,6 +52,7 @@ window.onload = function init() {
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
     gl.enable(gl.DEPTH_TEST);
+
 
     //  Load shaders and initialize attribute buffers
 
@@ -75,15 +73,12 @@ window.onload = function init() {
     var buffer2 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer2);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData.points)), gl.STATIC_DRAW);
-    
-    var buffer3 = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer3);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData.points)), gl.STATIC_DRAW);
 
 
     //
     // Add drawinfo to the SceneNodes
     //
+
     sphereNode1.addDrawable({
     	bufferInfo: {
         	buffer: buffer1,
@@ -91,7 +86,7 @@ window.onload = function init() {
 		},
         // Will be uploaded as uniforms
         uniformInfo: {
-            color: vec4(1, 0, 0, 1)
+            color: vec4(0, 1, 1, 1)
         },
         programInfo: {
         	program: program,
@@ -116,24 +111,6 @@ window.onload = function init() {
         }
     });
 
-    sphereNode3.addDrawable({
-    	bufferInfo: {
-        	buffer: buffer3,
-        	numVertices: sphereData.numVertices
-		},
-        // Will be uploaded as uniforms
-        uniformInfo: {
-            color: vec4(0, 0, 1, 1)
-        },
-        programInfo: {
-        	program: program,
-            worldMatLocation: WorldMatLocation,
-            colorLocation: ColorLocation
-        }
-    });
-
-    
-
 
     //
     // Set up and start the render loop
@@ -155,15 +132,10 @@ window.onload = function init() {
 
         sphereNode1.rotateSelf((3600/60*diffSeconds), [0,1,0]);
         sphereNode2.rotateSelf((36000/60*diffSeconds), [0,1,0]);
-        sphereNode3.rotateSelf((36000   /60*diffSeconds), [0,1,0]);
         sphereNode2.rotate((3600/60*diffSeconds), [0,1,0]);
-        sphereNode3.rotate((3600/60*diffSeconds*4), [0,1,0]);
 
-        // Load the MVP matrix into the scene and update all nodes.
-        //scene.localMatrix = MVP;
+        // Update the world matrices of the entire scene graph (Since we are starting at the root node).
         scene.updateWorldMatrix();
-
-        console.log(SceneNode.getDrawableNodes().length);
 
         render(SceneNode.getDrawableNodes(), ModelViewProjectionLocation, ColorLocation, WorldMatLocation, MVP);
 
@@ -178,16 +150,6 @@ function render(drawableObjects, mvpLocation, colorLocation, worldMatLocation, M
     gl.uniformMatrix4fv(mvpLocation, false, flatten(MVP));
 
     drawableObjects.forEach(function(object) {
-  //       gl.useProgram(object.drawInfo.programInfo.program);
-		// gl.bindBuffer(gl.ARRAY_BUFFER, object.drawInfo.bufferInfo.buffer);
-		// var vPosition = gl.getAttribLocation(object.drawInfo.programInfo.program, "vPosition");
-  //   	gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
-  //  		gl.enableVertexAttribArray(vPosition);
-
-  //       gl.uniformMatrix4fv(worldMatLocation, false, flatten(object.worldMatrix));      // Pass the world matrix of the current object to the shader.
-  //       gl.uniform4fv(colorLocation, new Float32Array(object.drawInfo.uniformInfo.color));
-  //       gl.drawArrays(gl.TRIANGLES, 0, object.drawInfo.bufferInfo.numVertices);
-
-        renderDrawable(object);
+        renderDrawable(object); // Render a drawable.
     });
 }
