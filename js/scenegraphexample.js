@@ -17,14 +17,13 @@ window.onload = function init() {
 
     // Create the root SceneNode of the scene graph.
     var scene = new SceneNode(null);
-    console.log(scene);
 
     //
     // Set up our models
     //
 
-    camera.setPosition(vec3(0, 5, -3));
-    camera.forwardDirection = subtract(vec3(0,0,0), camera.position);
+    camera.setPosition(vec3(0, 5, 10));
+    camera.forwardDirection = subtract(vec3(0,0,-1), camera.position);
 
     //var Projection = ortho(-10, 10, -10, 10, -10, 10);
     var Projection = perspective(60, canvas.width/canvas.height, 0.01, 1000);
@@ -135,7 +134,7 @@ window.onload = function init() {
         sphereNode2.rotate((3600/60*diffSeconds), [0,1,0]);
 
         // Update the world matrices of the entire scene graph (Since we are starting at the root node).
-        scene.updateWorldMatrix();
+        scene.updateMatrices();
 
         render(SceneNode.getDrawableNodes(), ModelViewProjectionLocation, ColorLocation, WorldMatLocation, MVP);
 
