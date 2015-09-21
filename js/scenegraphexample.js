@@ -34,11 +34,12 @@ window.onload = function init() {
     // SCENE GRAPH CODE
 
     //Create the sphere and add it to the scene graph
-    var sphereData = generateSphere(16, 16);
+    var sphereData1 = generateSphere(16, 16);
     var sphereNode1 = new SceneNode(scene);	// scene as parent
     sphereNode1.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode1
 
     // Create another sphereNode using the same data, and set it as a child of the first sphere
+    var sphereData2 = generateSphere(4, 4);
     var sphereNode2 = new SceneNode(sphereNode1);
     sphereNode2.translate([6,0,0]); // Translate relative to sphereNode 1.
     sphereNode2.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode1
@@ -69,11 +70,11 @@ window.onload = function init() {
 
     var buffer1 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer1);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData.points)), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData1.points)), gl.STATIC_DRAW);
 
     var buffer2 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer2);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData.points)), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData2.points)), gl.STATIC_DRAW);
 
 
     //
@@ -83,7 +84,7 @@ window.onload = function init() {
     sphereNode1.addDrawable({
     	bufferInfo: {
         	buffer: buffer1,
-        	numVertices: sphereData.numVertices
+        	numVertices: sphereData1.numVertices
 		},
         // Will be uploaded as uniforms
         uniformInfo: {
@@ -99,7 +100,7 @@ window.onload = function init() {
     sphereNode2.addDrawable({
     	bufferInfo: {
         	buffer: buffer2,
-        	numVertices: sphereData.numVertices
+        	numVertices: sphereData2.numVertices
 		},
         // Will be uploaded as uniforms
         uniformInfo: {
