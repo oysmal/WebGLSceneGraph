@@ -128,20 +128,15 @@ SceneNode.prototype.updateMatrices = function() {
 
 		// Multiply the localMatrix of this node with the propagationMatrix of its parent.
 		this._propagationMatrix = mult(this._parent._propagationMatrix, this._localMatrix);
-
-		// Update local only transforms (rotation around own axis) and put the result in _worldMatrix
-		this.updateLocalOnlyTransforms();
-
 	} 
 	// Do this if the node does not have a parent (is a root node)
 	else {
 		//Just set the _localMatrix as the _propagationMatrix since this node does not have a parent
 		this._propagationMatrix = this._localMatrix;
-
-		// Update local only transforms (rotation around own axis) and put the result in _worldMatrix
-		this.updateLocalOnlyTransforms();
-	
 	}
+
+	// Update local only transforms (rotation around own axis) and put the result in _worldMatrix
+	this.updateLocalOnlyTransforms();
 
 	// Propagate the update downwards in the scene tree (the children will use this node's _propagationMatrix in the updateMatrices)
 	for(var i = 0; i < this._children.length; i++) {
