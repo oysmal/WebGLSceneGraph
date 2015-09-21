@@ -179,6 +179,10 @@ SceneNode.prototype.scale = function(scale) {
 	}
 };
 
+/**
+ * Set position according relative to the parent's position
+ * @param position a new position
+ */
 SceneNode.prototype.setPosition = function(position) {
 	"use strict";
 
