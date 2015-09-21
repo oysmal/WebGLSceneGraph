@@ -137,15 +137,16 @@ window.onload = function init() {
         // Update the world matrices of the entire scene graph (Since we are starting at the root node).
         scene.updateMatrices();
 
-        render(SceneNode.getDrawableNodes(), ViewProjectionLocation, ColorLocation, WorldMatLocation, ViewProjection);
+        render(SceneNode.getDrawableNodes(), ViewProjectionLocation, ViewProjection);
 
+        // Ask the the browser to draw when it's convenient
         window.requestAnimationFrame(step);
     });
 
 
 };
 
-function render(drawableObjects, viewProjectionLocation, colorLocation, worldMatLocation, ViewProjection) {
+function render(drawableObjects, viewProjectionLocation, ViewProjection) {
     "use strict";
 
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
