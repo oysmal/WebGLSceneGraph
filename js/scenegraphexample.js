@@ -65,7 +65,7 @@ window.onload = function init() {
     var WorldMatLocation = gl.getUniformLocation(program, "WorldMatrix");
 
     /* Load the data into the GPU in 2 separate buffers.
-     * Avoid creation of unneccessary buffer (containing exactly the same data). */
+     * Avoid creation of unnecessary buffers (containing exactly the same data). */
 
     var buffer1 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer1);

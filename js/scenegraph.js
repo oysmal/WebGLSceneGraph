@@ -151,7 +151,6 @@ SceneNode.prototype.updateMatrices = function() {
 	}
 };
 
-
 // Update the transforms affecting ONLY the node itself. In this case rotation around its own axis.
 SceneNode.prototype.updateLocalOnlyTransforms = function() {
 	"use strict";
@@ -165,6 +164,15 @@ SceneNode.prototype.updateLocalOnlyTransforms = function() {
 	}
 };
 
+/**
+ * Sets the current absolute scale
+ * @param scale {vec3} a vector determining the scale in x, y, z directions
+ */
+SceneNode.prototype.setScale = function(scale) {
+	"use strict";
+
+	this._thescale = scalem(scale);
+};
 
 // Scale the node.
 // @scale an array with 3 components, representing the scale along each axis. E.g. make the node twice as large: scale = [2,2,2].
@@ -176,6 +184,11 @@ SceneNode.prototype.scale = function(scale) {
 	}
 };
 
+SceneNode.prototype.setPosition = function(position) {
+	"use strict";
+
+	this._translation = translate(position);
+};
 
 // Translate the node.
 // @translation an array with 3 components, representing the distance to translate along each axis.
@@ -187,6 +200,20 @@ SceneNode.prototype.translate = function(translation) {
 	}
 };
 
+/**
+ * Set actual orientation relative to it's parent.
+ * @param angles {vec3} three euler angles in degrees
+ */
+SceneNode.prototype.setOrientation = function(angles) {
+	"use strict";
+
+	// Reset current orientation
+	this._rotation = mat4(1);
+
+	this.rotate(angles[0], [1,0,0]);
+	this.rotate(angles[1], [0,1,0]);
+	this.rotate(angles[2], [0,0,1]);
+};
 
 // Rotate the node relative to it's parent.
 // @angle the angle to rotate (in degrees)
@@ -199,6 +226,20 @@ SceneNode.prototype.rotate = function(angle, axis) {
 	}
 };
 
+/**
+ * Set actual self orientationS.
+ * @param angles {vec3} three euler angles in degrees
+ */
+SceneNode.prototype.setOrientationSelf = function(angles) {
+	"use strict";
+
+	// Reset current self orientation
+	this._rotationSelf = mat4(1);
+
+	this.rotateSelf(angles[0], [1,0,0]);
+	this.rotateSelf(angles[1], [0,1,0]);
+	this.rotateSelf(angles[2], [0,0,1]);
+};
 
 // Rotate the node around itself.
 // @angle the angle to rotate (in degrees)
