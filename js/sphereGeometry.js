@@ -11,6 +11,8 @@
  * @return {Object} an object containing the generated geometry
  */
 function generateSphere(numSphereStacks, numSphereSlices) {
+    "use strict";
+
     var stackAngleStep = Math.PI/(numSphereStacks);
     var sliceAngleStep = (Math.PI*2)/numSphereSlices;
 
@@ -55,6 +57,8 @@ function generateSphere(numSphereStacks, numSphereSlices) {
  * @returns {vec4} a sphere point
  */
 function getCoordinate(longitude, latitude, radius) {
+    "use strict";
+
     var y = Math.cos(latitude);
     var x = Math.cos(longitude) * Math.sin(latitude);
     var z = Math.sin(longitude) * Math.sin(latitude);

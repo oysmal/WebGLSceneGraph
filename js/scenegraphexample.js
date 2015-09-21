@@ -1,8 +1,9 @@
-"use strict";
 
 var gl;
 
 window.onload = function init() {
+    "use strict";
+
     var canvas = document.getElementById("canvas");
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) {
@@ -142,9 +143,11 @@ window.onload = function init() {
     });
 
 
-}
+};
 
-function render(drawableObjects, mvpLocation, colorLocation, worldMatLocation, MVP) {
+function render(drawableObjects, viewProjectionLocation, colorLocation, worldMatLocation, ViewProjection) {
+    "use strict";
+
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.uniformMatrix4fv(mvpLocation, false, flatten(MVP));
 
