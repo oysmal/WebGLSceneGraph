@@ -64,7 +64,8 @@ window.onload = function init() {
     var ColorLocation = gl.getUniformLocation(program, "Color");
     var WorldMatLocation = gl.getUniformLocation(program, "WorldMatrix");
 
-    /* Load the data into the GPU in 2 separate buffers*/
+    /* Load the data into the GPU in 2 separate buffers.
+     * Avoid creation of unneccessary buffer (containing exactly the same data). */
 
     var buffer1 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer1);
@@ -118,7 +119,7 @@ window.onload = function init() {
 
     var prevTimestamp = 0;
 
-    window.requestAnimationFrame(function step(timestamp) {
+    function step(timestamp) {
         var deltaTimestamp = timestamp - prevTimestamp;
         prevTimestamp = timestamp;
 
@@ -141,9 +142,10 @@ window.onload = function init() {
 
         // Ask the the browser to draw when it's convenient
         window.requestAnimationFrame(step);
-    });
+    }
 
-
+    // Ask the the browser to draw when it's convenient
+    window.requestAnimationFrame(step);
 };
 
 function render(drawableObjects, viewProjectionLocation, ViewProjection) {
