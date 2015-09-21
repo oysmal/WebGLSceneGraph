@@ -60,7 +60,7 @@ window.onload = function init() {
 
     gl.useProgram(program);
 
-    var ModelViewProjectionLocation = gl.getUniformLocation(program, "ModelViewProjection");
+    var ViewProjectionLocation = gl.getUniformLocation(program, "ViewProjection");
     var ColorLocation = gl.getUniformLocation(program, "Color");
     var WorldMatLocation = gl.getUniformLocation(program, "WorldMatrix");
 
@@ -127,7 +127,7 @@ window.onload = function init() {
 
         camera.update(deltaTimestamp);
         View = camera.getViewMatrix();
-        var MVP = mult(Projection, View);
+        var ViewProjection = mult(Projection, View);
 
 
         sphereNode1.rotateSelf((3600/60*diffSeconds), [0,1,0]);
@@ -137,7 +137,7 @@ window.onload = function init() {
         // Update the world matrices of the entire scene graph (Since we are starting at the root node).
         scene.updateMatrices();
 
-        render(SceneNode.getDrawableNodes(), ModelViewProjectionLocation, ColorLocation, WorldMatLocation, MVP);
+        render(SceneNode.getDrawableNodes(), ViewProjectionLocation, ColorLocation, WorldMatLocation, ViewProjection);
 
         window.requestAnimationFrame(step);
     });
@@ -149,7 +149,7 @@ function render(drawableObjects, viewProjectionLocation, colorLocation, worldMat
     "use strict";
 
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.uniformMatrix4fv(mvpLocation, false, flatten(MVP));
+    gl.uniformMatrix4fv(viewProjectionLocation, false, flatten(ViewProjection));
 
     drawableObjects.forEach(function(object) {
         renderDrawable(object); // Render a drawable.

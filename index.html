@@ -15,7 +15,7 @@
 	<script id="vertex-shader" type="x-shader/x-vertex">
 		attribute  vec4 vPosition;
 
-		uniform mat4 ModelViewProjection;
+		uniform mat4 ViewProjection;
 		uniform mat4 WorldMatrix;
 
 		varying float factor;
@@ -23,7 +23,7 @@
 		void main()
 		{
 			factor = vPosition.x;
-			gl_Position = ModelViewProjection * WorldMatrix * vPosition;
+			gl_Position = ViewProjection * WorldMatrix * vPosition;
 		}
 
 	</script>
