@@ -1,23 +1,22 @@
 /*
 Scenegraph node. Create a Node and set it as a parent to (or child of) other Nodes 
 to create a transform hierarchy (SceneGraph). 
-@parent If a Node is passed as an argument to the constructor (new Node(parent)), 
-that Node will be set as the parent of the new Node. If not, parentMatrix it is set to null
+@param parent: If a Node is passed as an argument to the constructor (new Node(parent)), 
+that Node will be set as the parent of the new Node. If not, _parent it is set to null
  */
 var SceneNode = function(parent){
 	"use strict";
 
-	this._localMatrix = mat4();
-	this._propagationMatrix = this._localMatrix;	// The matrix used to update children
-	this.worldMatrix = this._localMatrix;			// The matrix used for rendering this node
+	// The Model matrix for this node (Translation, Rotation, Scale)
+	this._localMatrix = mat4(1);
+	this.worldMatrix = this._localMatrix;	// The matrix used for rendering this node and updating children
 
 	this._parent = null;
 	this.drawInfo = null;
 
-	this._translation = mat4();
-	this._thescale = mat4();
-	this._rotation = mat4();
-	this._rotationSelf = mat4();
+	this._position = [0,0,0];
+	this._scale = [1,1,1];
+	this._rotation = [0,0,0];
 
 	this._children = [];
 
@@ -44,6 +43,7 @@ SceneNode.getDrawableNodes = function() {
 };
 
 // Add a drawable node to the list.
+// @param node: node to add to drawable list
 SceneNode.addDrawableNode = function(node) {
 	"use strict";
 
@@ -53,6 +53,7 @@ SceneNode.addDrawableNode = function(node) {
 };
 
 // Remove a drawable node from the list.
+// @param node: node to remove from drawable list
 SceneNode.removeDrawableNode = function(node) {
 	"use strict";
 
@@ -64,8 +65,8 @@ SceneNode.removeDrawableNode = function(node) {
 
 
 /* Add drawinfo to the node the function is invoked on, 
-thereby making it renderable (Adding it to the drawable list).
-@drawInfo an object containing information about buffers, uniforms and shader program. */
+thereby making it renderable (It will add itself to the drawable list).
+@param drawInfo: an object containing information about buffers, uniforms and shader program. */
 SceneNode.prototype.addDrawable = function(drawInfo) {
 	"use strict";
 
@@ -80,7 +81,7 @@ SceneNode.prototype.addDrawable = function(drawInfo) {
 
 /* Add a child to the node the function is invoked 
 on if it is not already a child of this node.
-@child The node to add as a child of this node. 
+@param child: The node to add as a child of this node. 
 */
 SceneNode.prototype.addChild = function(child) {
 	"use strict";
@@ -94,7 +95,7 @@ SceneNode.prototype.addChild = function(child) {
 
 /* Remove a child from the node the function is invoked 
 on if it is a child of this node.
-@child The node to remove as a child of this node. 
+@param child: The node to remove as a child of this node. 
 */
 SceneNode.prototype.removeChild = function(child) {
 	"use strict";
@@ -111,21 +112,9 @@ SceneNode.prototype.removeChild = function(child) {
 };
 
 
-// Updates the node's _propagationMatrix and _worldMatrix, and propagates the _propagationMatrix down the tree from the node. 
-// Call this method on the root node to update the whole tree.
-// 
-// Note on _propagationMatrix:
-// To ensure that the rotation of the node around itself does not contribute to its childrens rotation,
-// we have to add the _rotateSelf multiplication after we update the _propagationMatrix. 
-// 
-// This is equivalent to the matrix notation: _propagationMatrix = Parent*LocalMatrix
-// and _worldMatrix = Parent*LocalMatrix*RotateSelf
-//
-// From this you can see that we do not propagate the RotateSelf matrix down the tree.
-//
-// This last rotation happens in updateLocalOnlyTransforms(). 
-// It is in this function we update the current node's worldMatrix.
-// 
+/* Updates the node's _worldMatrix, and propagates the _worldMatrix down the tree from the node. 
+ * Call this method on the root node to update the whole tree.
+ */ 
 SceneNode.prototype.updateMatrices = function() {
 	"use strict";
 
@@ -134,21 +123,17 @@ SceneNode.prototype.updateMatrices = function() {
 	// Do this if the node has a parent
 	if(this._parent !== null) {
 
-		// Multiply the localMatrix of this node with the propagationMatrix of its parent.
-		this._propagationMatrix = mult(this._parent._propagationMatrix, this._localMatrix);
+		// Multiply the localMatrix of this node with the _worldMatrix of its parent.
+		this._worldMatrix = mult(this._parent._worldMatrix, this._localMatrix);
 	} 
 	// Do this if the node does not have a parent (is a root node)
 	else {
-		//Just set the _localMatrix as the _propagationMatrix since this node does not have a parent
-		this._propagationMatrix = this._localMatrix;
+		//Just set the _localMatrix as the _worldMatrix since this node does not have a parent
+		this._worldMatrix = this._localMatrix;
 	}
 
-	// Update local only transforms (rotation around own axis) and put the result in _worldMatrix
-	this.updateLocalOnlyTransforms();
-
-
 	// Propagate the update downwards in the scene tree 
-	//(the children will use this node's _propagationMatrix in the updateMatrices)
+	//(the children will use this node's _worldMatrix in the updateMatrices)
 	for(var i = 0; i < this._children.length; i++) {
 
 		this._children[i].updateMatrices();
@@ -156,121 +141,91 @@ SceneNode.prototype.updateMatrices = function() {
 	}
 };
 
-// Update the transforms affecting ONLY the node itself. In this case rotation around its own axis.
-SceneNode.prototype.updateLocalOnlyTransforms = function() {
-	"use strict";
-
-	if(this._parent !== null) {
-		this._localMatrix = mult(this._localMatrix, this._rotationSelf);
-		this.worldMatrix = mult(this._parent._propagationMatrix, this._localMatrix);
-	} else {
-		this._localMatrix = mult(this._localMatrix, this._rotationSelf);
-		this.worldMatrix = this._localMatrix;
-	}
-};
-
 /**
  * Sets the current absolute scale
- * @param scale {vec3} a vector determining the scale in x, y, z directions
+ * @param scale {vec3}: a vector determining the scale in x, y, z directions
  */
 SceneNode.prototype.setScale = function(scale) {
 	"use strict";
 
-	this._thescale = scalem(scale);
+	this._scale = scale;
 };
 
 // Scale the node.
-// @scale an array with 3 components, representing the scale along each axis. 
+// @param scale: an array with 3 components, representing the scale along each axis. 
 //E.g. make the node twice as large: scale = [2,2,2].
 SceneNode.prototype.scale = function(scale) {
 	"use strict";
 
 	if(scale) {
-		this._thescale = mult(this._thescale, scalem(scale));
+		this._scale = mult(this._scale, scale);
 	}
 };
 
 /**
  * Set position according relative to the parent's position
- * @param position a new position
+ * @param position: a new position
  */
 SceneNode.prototype.setPosition = function(position) {
 	"use strict";
 
-	this._translation = translate(position);
+	if(position) {
+		this._position = position;
+	}
 };
 
 // Translate the node.
-// @translation an array with 3 components, representing the distance to translate along each axis.
+// @param translation: an array with 3 components, representing the distance to translate along each axis.
 SceneNode.prototype.translate = function(translation) {
 	"use strict";
 
 	if(translation) {
-		this._translation = mult(this._translation, translate(translation));
+		this._position = add(this._position, translation);
 	}
 };
 
 /**
  * Set actual orientation relative to it's parent.
- * @param angles {vec3} three euler angles in degrees
+ * @param angles {vec3}: three euler angles in degrees
  */
 SceneNode.prototype.setOrientation = function(angles) {
 	"use strict";
 
 	// Reset current orientation
-	this._rotation = mat4(1);
-
-	this.rotate(angles[0], [1,0,0]);
-	this.rotate(angles[1], [0,1,0]);
-	this.rotate(angles[2], [0,0,1]);
-};
-
-// Rotate the node relative to it's parent.
-// @angle the angle to rotate (in degrees)
-// @axis an array describing the axis to rotate around. E.g. [0,1,0] for y axis. This can also be e.g. [1,0.5,0] etc.
-SceneNode.prototype.rotate = function(angle, axis) {
-	"use strict";
-
-	if(angle && axis) {
-		this._rotation = mult(this._rotation, rotate(angle, axis));
+	if(angles) {
+		this._rotation = angles;
 	}
 };
 
 /**
- * Set actual self orientationS.
- * @param angles {vec3} three euler angles in degrees
+ * Rotate the node relative to it's parent.
+ * @param angles {vec3}: three euler angles in degrees
  */
-SceneNode.prototype.setOrientationSelf = function(angles) {
+SceneNode.prototype.rotate = function(angles) {
 	"use strict";
 
-	// Reset current self orientation
-	this._rotationSelf = mat4(1);
-
-	this.rotateSelf(angles[0], [1,0,0]);
-	this.rotateSelf(angles[1], [0,1,0]);
-	this.rotateSelf(angles[2], [0,0,1]);
-};
-
-// Rotate the node around itself.
-// @angle the angle to rotate (in degrees)
-// @axis an array describing the axis to rotate around. E.g. [0,1,0] for y axis. This can also be e.g. [1,0.5,0] etc.
-SceneNode.prototype.rotateSelf = function(angle, axis) {
-	"use strict";
-
-	if(angle && axis) {
-		this._rotationSelf = mult(this._rotationSelf, rotate(angle, axis));
+	if(angles) { 
+		this._rotation = add(this._rotation, angles);
 	}
 };
 
 
-// Calculate the localMatrix by multiplying the scale, rotation and translation matrices.
-// Remember that this translates relative to the parent node, so rotations done here will be rotations around the parent node.
+/* Calculate the localMatrix by multiplying the translation, rotation and scale matrices. 
+ * Use the MV.js library to create matrices.
+ */
 SceneNode.prototype.updateLocalMatrix = function() {
 	"use strict";
 
-	this._localMatrix = mult(mat4(), this._thescale);
-	this._localMatrix = mult(this._localMatrix, this._rotation);
-	this._localMatrix = mult(this._localMatrix, this._translation);
+	// Reset _localMatrix
+	this._localMatrix = mat4(1);
+
+	// Recalculate _localMatrix
+	this._localMatrix = mult(this._localMatrix, translate(this._position));
+	this._localMatrix = mult(this._localMatrix, rotateX(this._rotation[0]));
+	this._localMatrix = mult(this._localMatrix, rotateY(this._rotation[1]));
+	this._localMatrix = mult(this._localMatrix, rotateZ(this._rotation[2]));
+	this._localMatrix = mult(this._localMatrix, scalem(this._scale));
+
 };
 
 

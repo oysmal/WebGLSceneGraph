@@ -26,7 +26,6 @@ window.onload = function init() {
     camera.setPosition(vec3(0, 5, 10));
     camera.forwardDirection = subtract(vec3(0,0,-1), camera.position);
 
-    //var Projection = ortho(-10, 10, -10, 10, -10, 10);
     var Projection = perspective(60, canvas.width/canvas.height, 0.01, 1000);
     var View = camera.getViewMatrix();
 
@@ -38,11 +37,17 @@ window.onload = function init() {
     var sphereNode1 = new SceneNode(scene);	// scene as parent
     sphereNode1.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode1
 
-    // Create another sphereNode using the same data, and set it as a child of the first sphere
-    var sphereData2 = generateSphere(4, 4);
-    var sphereNode2 = new SceneNode(sphereNode1);
-    sphereNode2.translate([6,0,0]); // Translate relative to sphereNode 1.
-    sphereNode2.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode1
+    // Create a non-drawable node rotating all its children around the node's point
+    // in space (in this case the origo since we do not translate it). This will let us controll 
+    // the oribit speed instead of it following the rotation of the parent (the sun).
+    var orbitNode = new SceneNode(scene); 
+
+    // Create another sphereNode using the same data, and set it as a child of the orbitNode
+    // so it will orbit around the orbitNode's position (0,0,0).
+    var sphereData2 = generateSphere(16, 16);
+    var sphereNode2 = new SceneNode(orbitNode);
+    sphereNode2.translate([5,0,0]); // Translate relative to sphereNode 1.
+    sphereNode2.scale([0.25,0.25,0.25]); // Make it half the size of sphereNode1
 
     
     //
@@ -132,9 +137,15 @@ window.onload = function init() {
         var ViewProjection = mult(Projection, View);
 
 
-        sphereNode1.rotateSelf((3600/60*diffSeconds), [0,1,0]);
-        sphereNode2.rotateSelf((36000/60*diffSeconds), [0,1,0]);
-        sphereNode2.rotate((3600/60*diffSeconds), [0,1,0]);
+        // Rotate sphereNode1 around itself
+        sphereNode1.rotate([0,3600/60*diffSeconds,0]);
+
+        // Rotate the orbitNode around itself. This will propagate to all its children(sphereNode2)
+        // so they will orbit the orbitNode. 
+        orbitNode.rotate([0,3600/60*diffSeconds,0]);
+
+        // Rotate sphereNode2 around itself
+        sphereNode2.rotate([0,3600/60*diffSeconds,0]);
 
         // Update the world matrices of the entire scene graph (Since we are starting at the root node).
         scene.updateMatrices();
