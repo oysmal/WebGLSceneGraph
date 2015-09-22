@@ -1,7 +1,8 @@
 /*
-Scenegraph node. Create a Node and set it as a parent to (or child of) other Nodes to create a transform hierarchy (SceneGraph). 
-
-@parent If a Node is passed as an argument to the constructor (new Node(parent)), that Node will be set as the parent of the new Node. If not, parentMatrix it is set to null
+Scenegraph node. Create a Node and set it as a parent to (or child of) other Nodes 
+to create a transform hierarchy (SceneGraph). 
+@parent If a Node is passed as an argument to the constructor (new Node(parent)), 
+that Node will be set as the parent of the new Node. If not, parentMatrix it is set to null
  */
 var SceneNode = function(parent){
 
@@ -27,8 +28,10 @@ var SceneNode = function(parent){
 
 
 /*
-	These are static variables and functions in JavaScript (Notice the lack of "prototype"). 
-	These methods are not meant to be called from outside SceneNode with the exception of "getDrawableNodes".
+	These are static variables and functions in JavaScript 
+	(Notice the lack of "prototype"). 
+	These methods are not meant to be called from outside 
+	SceneNode with the exception of "getDrawableNodes".
 */
 SceneNode.drawableNodes = [];	// A list of nodes with drawable components
 
@@ -53,8 +56,9 @@ SceneNode.removeDrawableNode = function(node) {
 };
 
 
-// Add drawinfo to the node the function is invoked on, thereby making it renderable (Adding it to the drawable list)
-// @drawInfo an object containing information about buffers, uniforms and shader program.
+/* Add drawinfo to the node the function is invoked on, 
+thereby making it renderable (Adding it to the drawable list).
+@drawInfo an object containing information about buffers, uniforms and shader program. */
 SceneNode.prototype.addDrawable = function(drawInfo) {
 	if(drawInfo) {
 		this.drawInfo = drawInfo;
@@ -65,8 +69,10 @@ SceneNode.prototype.addDrawable = function(drawInfo) {
 } 
 
 
-// Add a child to the node the function is invoked on if it is not already a child of this node.
-// @child The node to add as a child of this node.
+/* Add a child to the node the function is invoked 
+on if it is not already a child of this node.
+@child The node to add as a child of this node. 
+*/
 SceneNode.prototype.addChild = function(child) {
 	if(child && this._children.indexOf(child) == -1) {
 		this._children.push(child);
@@ -75,8 +81,10 @@ SceneNode.prototype.addChild = function(child) {
 }
 
 
-// Remove a child from the node the function is invoked on if it is a child of this node.
-// @child The node to remove as a child of this node.
+/* Remove a child from the node the function is invoked 
+on if it is a child of this node.
+@child The node to remove as a child of this node. 
+*/
 SceneNode.prototype.removeChild = function(child) {
 	if(child) {
 		var index = this._children.indexOf(child);
@@ -129,7 +137,8 @@ SceneNode.prototype.updateMatrices = function() {
 	
 	}
 
-	// Propagate the update downwards in the scene tree (the children will use this node's _propagationMatrix in the updateMatrices)
+	// Propagate the update downwards in the scene tree 
+	//(the children will use this node's _propagationMatrix in the updateMatrices)
 	for(var i = 0; i < this._children.length; i++) {
 
 		this._children[i].updateMatrices();
@@ -151,7 +160,8 @@ SceneNode.prototype.updateLocalOnlyTransforms = function() {
 
 
 // Scale the node.
-// @scale an array with 3 components, representing the scale along each axis. E.g. make the node twice as large: scale = [2,2,2].
+// @scale an array with 3 components, representing the scale along each axis. 
+//E.g. make the node twice as large: scale = [2,2,2].
 SceneNode.prototype.scale = function(scale) {
 	if(scale) {
 		this._thescale = mult(this._thescale, scalem(scale));
