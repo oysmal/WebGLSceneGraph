@@ -1,8 +1,9 @@
-"use strict";
 
 var gl;
 
 window.onload = function init() {
+    "use strict";
+
     var canvas = document.getElementById("canvas");
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) {
@@ -33,11 +34,12 @@ window.onload = function init() {
     // SCENE GRAPH CODE
 
     //Create the sphere and add it to the scene graph
-    var sphereData = generateSphere(16, 16);
+    var sphereData1 = generateSphere(16, 16);
     var sphereNode1 = new SceneNode(scene);	// scene as parent
     sphereNode1.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode1
 
     // Create another sphereNode using the same data, and set it as a child of the first sphere
+    var sphereData2 = generateSphere(4, 4);
     var sphereNode2 = new SceneNode(sphereNode1);
     sphereNode2.translate([6,0,0]); // Translate relative to sphereNode 1.
     sphereNode2.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode1
@@ -59,19 +61,20 @@ window.onload = function init() {
 
     gl.useProgram(program);
 
-    var ModelViewProjectionLocation = gl.getUniformLocation(program, "ModelViewProjection");
+    var ViewProjectionLocation = gl.getUniformLocation(program, "ViewProjection");
     var ColorLocation = gl.getUniformLocation(program, "Color");
     var WorldMatLocation = gl.getUniformLocation(program, "WorldMatrix");
 
-    /* Load the data into the GPU in 2 separate buffers*/
+    /* Load the data into the GPU in 2 separate buffers.
+     * Avoid creation of unnecessary buffers (containing exactly the same data). */
 
     var buffer1 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer1);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData.points)), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData1.points)), gl.STATIC_DRAW);
 
     var buffer2 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer2);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData.points)), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData2.points)), gl.STATIC_DRAW);
 
 
     //
@@ -81,7 +84,7 @@ window.onload = function init() {
     sphereNode1.addDrawable({
     	bufferInfo: {
         	buffer: buffer1,
-        	numVertices: sphereData.numVertices
+        	numVertices: sphereData1.numVertices
 		},
         // Will be uploaded as uniforms
         uniformInfo: {
@@ -97,7 +100,7 @@ window.onload = function init() {
     sphereNode2.addDrawable({
     	bufferInfo: {
         	buffer: buffer2,
-        	numVertices: sphereData.numVertices
+        	numVertices: sphereData2.numVertices
 		},
         // Will be uploaded as uniforms
         uniformInfo: {
@@ -117,7 +120,7 @@ window.onload = function init() {
 
     var prevTimestamp = 0;
 
-    window.requestAnimationFrame(function step(timestamp) {
+    function step(timestamp) {
         var deltaTimestamp = timestamp - prevTimestamp;
         prevTimestamp = timestamp;
 
@@ -126,7 +129,7 @@ window.onload = function init() {
 
         camera.update(deltaTimestamp);
         View = camera.getViewMatrix();
-        var MVP = mult(Projection, View);
+        var ViewProjection = mult(Projection, View);
 
 
         sphereNode1.rotateSelf((3600/60*diffSeconds), [0,1,0]);
@@ -136,17 +139,21 @@ window.onload = function init() {
         // Update the world matrices of the entire scene graph (Since we are starting at the root node).
         scene.updateMatrices();
 
-        render(SceneNode.getDrawableNodes(), ModelViewProjectionLocation, ColorLocation, WorldMatLocation, MVP);
+        render(SceneNode.getDrawableNodes(), ViewProjectionLocation, ViewProjection);
 
+        // Ask the the browser to draw when it's convenient
         window.requestAnimationFrame(step);
-    });
+    }
 
+    // Ask the the browser to draw when it's convenient
+    window.requestAnimationFrame(step);
+};
 
-}
+function render(drawableObjects, viewProjectionLocation, ViewProjection) {
+    "use strict";
 
-function render(drawableObjects, mvpLocation, colorLocation, worldMatLocation, MVP) {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.uniformMatrix4fv(mvpLocation, false, flatten(MVP));
+    gl.uniformMatrix4fv(viewProjectionLocation, false, flatten(ViewProjection));
 
     drawableObjects.forEach(function(object) {
         renderDrawable(object); // Render a drawable.

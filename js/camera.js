@@ -2,7 +2,7 @@
  * Created by endre on 06.09.15.
  */
 
-"use strict";
+
 
 /**
  * Simple camera that listens to the key board and mouse.
@@ -10,6 +10,8 @@
  * @constructor
  */
 function Camera(keyboardState) {
+    "use strict";
+
     this.keyboardState = keyboardState;
 
     this.position = vec3(0,0,0);
@@ -51,6 +53,7 @@ function Camera(keyboardState) {
  * @param deltaTimestampMillis {Number} number of milliseconds since last draw
  */
 Camera.prototype.update = function(deltaTimestampMillis) {
+    "use strict";
 
     this._updatePosition(deltaTimestampMillis);
     this._updateOrientation(deltaTimestampMillis);
@@ -65,6 +68,8 @@ Camera.prototype.update = function(deltaTimestampMillis) {
  * @private
  */
 Camera.prototype._updatePosition = function(deltaTimestampMillis) {
+    "use strict";
+
     var seconds = deltaTimestampMillis / 1000;
 
     //  How far should we move in the forward direction?
@@ -90,6 +95,8 @@ Camera.prototype._updatePosition = function(deltaTimestampMillis) {
  * @private
  */
 Camera.prototype._updateOrientation = function(deltaTimestampMillis) {
+    "use strict";
+
     // Lets handle the mouse.deltaX and mouse.deltaY as degrees, use mouseSensitivity
     // as a way of controlling how much the system should react to orientation change.
 
@@ -129,6 +136,8 @@ Camera.prototype._updateOrientation = function(deltaTimestampMillis) {
  * @param position {(vec3|vec4)} a an array with at lest 3 numeric elements
  */
 Camera.prototype.setPosition = function(position) {
+    "use strict";
+
     this.position = vec3(position);
 };
 
@@ -137,6 +146,8 @@ Camera.prototype.setPosition = function(position) {
  * @param {(vec3|vec4)} forwardDirection
  */
 Camera.prototype.setForwardDirection = function(forwardDirection) {
+    "use strict";
+
     this.forwardDirection = normalize(vec3(forwardDirection));
 };
 
@@ -145,6 +156,8 @@ Camera.prototype.setForwardDirection = function(forwardDirection) {
  * @param {(vec3|vec4)} upDirection
  */
 Camera.prototype.setUpDirection = function(upDirection) {
+    "use strict";
+
     this.upDirection = normalize(vec3(upDirection));
 };
 
@@ -153,6 +166,8 @@ Camera.prototype.setUpDirection = function(upDirection) {
  * @returns {mat4} a 4x4 view matrix
  */
 Camera.prototype.getViewMatrix = function() {
+    "use strict";
+
     return this.viewMatrix;
 };
 
@@ -162,6 +177,8 @@ Camera.prototype.getViewMatrix = function() {
  * @private
  */
 Camera.prototype._onMouseMove = function(event) {
+    "use strict";
+
     var newX = event.clientX;
     var newY = event.clientY;
 
