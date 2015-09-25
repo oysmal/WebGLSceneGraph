@@ -70,6 +70,20 @@ window.onload = function init() {
     var ColorLocation = gl.getUniformLocation(program, "Color");
     var WorldMatLocation = gl.getUniformLocation(program, "WorldMatrix");
 
+    var vPositionLocation = gl.getAttribLocation(program, "vPosition");
+
+    var programInfo = {
+        program: program,
+        attributeLocations: {
+            vPosition: vPositionLocation
+        },
+        uniformLocations: {
+            viewProjectionMatrix: ViewProjectionLocation,
+            worldMatrix: WorldMatLocation,
+            color: ColorLocation
+        }
+    };
+
     /* Load the data into the GPU in 2 separate buffers.
      * Avoid creation of unnecessary buffers (containing exactly the same data). */
 
@@ -77,45 +91,41 @@ window.onload = function init() {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer1);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData1.points)), gl.STATIC_DRAW);
 
+    var sphere1BufferInfo = {
+        buffer: buffer1,
+        numVertices: sphereData1.numVertices
+    };
+
     var buffer2 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer2);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(sphereData2.points)), gl.STATIC_DRAW);
 
+
+    var sphere2BufferInfo = {
+        buffer: buffer2,
+        numVertices: sphereData2.numVertices
+    };
 
     //
     // Add drawinfo to the SceneNodes
     //
 
     sphereNode1.addDrawable({
-    	bufferInfo: {
-        	buffer: buffer1,
-        	numVertices: sphereData1.numVertices
-		},
+    	bufferInfo: sphere1BufferInfo,
         // Will be uploaded as uniforms
         uniformInfo: {
             color: vec4(0, 1, 1, 1)
         },
-        programInfo: {
-        	program: program,
-            worldMatLocation: WorldMatLocation,
-            colorLocation: ColorLocation
-        }
+        programInfo: programInfo
     });
 
     sphereNode2.addDrawable({
-    	bufferInfo: {
-        	buffer: buffer2,
-        	numVertices: sphereData2.numVertices
-		},
+    	bufferInfo: sphere2BufferInfo,
         // Will be uploaded as uniforms
         uniformInfo: {
             color: vec4(0, 1, 0, 1)
         },
-        programInfo: {
-        	program: program,
-            worldMatLocation: WorldMatLocation,
-            colorLocation: ColorLocation
-        }
+        programInfo: programInfo
     });
 
 
