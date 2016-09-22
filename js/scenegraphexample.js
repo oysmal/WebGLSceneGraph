@@ -177,6 +177,6 @@ function render(drawableObjects, viewProjectionLocation, ViewProjection) {
     gl.uniformMatrix4fv(viewProjectionLocation, false, flatten(ViewProjection));
 
     drawableObjects.forEach(function(object) {
-        renderDrawable(object); // Render a drawable.
+        Renderer.renderDrawable(object); // Render a drawable.
     });
 }

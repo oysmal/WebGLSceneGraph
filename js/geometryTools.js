@@ -19,20 +19,20 @@ function generateSurfaceNormals(triangleVertices) {
         console.log("Length of triangleVertices is not a multiple of 3, it is not possible generate complete surface normals");
     }
 
-    var numFaces = Math.floor(triangleVertices.length / 3);
+    let numFaces = Math.floor(triangleVertices.length / 3);
 
-    var surfaceNormals = [];
+    let surfaceNormals = [];
 
-    for (var i = 0; i < numFaces; ++i) {
+    for (let i = 0; i < numFaces; ++i) {
         // We need three points to generate a surface.
-        var vertex_a = triangleVertices[3*i + 0];
-        var vertex_b = triangleVertices[3*i + 1];
-        var vertex_c = triangleVertices[3*i + 2];
+        let vertex_a = triangleVertices[3*i + 0];
+        let vertex_b = triangleVertices[3*i + 1];
+        let vertex_c = triangleVertices[3*i + 2];
 
-        var vec_ab = subtract(vertex_b, vertex_a);
-        var vec_ac = subtract(vertex_c, vertex_a);
+        let vec_ab = subtract(vertex_b, vertex_a);
+        let vec_ac = subtract(vertex_c, vertex_a);
 
-        var normal_vector = normalize(cross(vec_ab, vec_ac));
+        let normal_vector = normalize(cross(vec_ab, vec_ac));
 
         surfaceNormals.push(normal_vector);
         surfaceNormals.push(normal_vector);

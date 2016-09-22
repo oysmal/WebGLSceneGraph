@@ -4,11 +4,11 @@
 
 function generateCube() {
 
-    var points = [];
-    var colors = [];
-    var texCoords = [];
+    let points = [];
+    let colors = [];
+    let texCoords = [];
 
-    var vertices = [
+    let vertices = [
         vec4( -0.5, -0.5,  0.5, 1.0 ),
         vec4( -0.5,  0.5,  0.5, 1.0 ),
         vec4(  0.5,  0.5,  0.5, 1.0 ),
@@ -19,7 +19,7 @@ function generateCube() {
         vec4(  0.5, -0.5, -0.5, 1.0 )
     ];
 
-    var vertexColors = [
+    let vertexColors = [
         [ 0.0, 0.0, 0.0, 1.0 ],  // black
         [ 1.0, 0.0, 0.0, 1.0 ],  // red
         [ 1.0, 1.0, 0.0, 1.0 ],  // yellow
@@ -30,7 +30,7 @@ function generateCube() {
         [ 1.0, 1.0, 1.0, 1.0 ]   // white
     ];
 
-    var faces = [
+    let faces = [
         [1, 0, 3, 2],
         [2, 3, 7, 6],
         [3, 0, 4, 7],
@@ -45,15 +45,15 @@ function generateCube() {
 
     //vertex color assigned by the index of the vertex
 
-    for (var f = 0; f < faces.length; ++f) {
-        var a = faces[f][0];
-        var b = faces[f][1];
-        var c = faces[f][2];
-        var d = faces[f][3];
+    for (let f = 0; f < faces.length; ++f) {
+        let a = faces[f][0];
+        let b = faces[f][1];
+        let c = faces[f][2];
+        let d = faces[f][3];
 
-        var indices = [a, b, c, a, c, d];
+        let indices = [a, b, c, a, c, d];
 
-        for (var i = 0; i < indices.length; ++i) {
+        for (let i = 0; i < indices.length; ++i) {
             points.push(vertices[indices[i]]);
             //colors.push( vertexColors[indices[i]] );
 
@@ -69,7 +69,7 @@ function generateCube() {
         texCoords.push(vec2(0, 1));
     }
 
-    var surfaceNormals = generateSurfaceNormals(points);
+    let surfaceNormals = generateSurfaceNormals(points);
 
     return {
         "numVertices": points.length,

@@ -70,10 +70,10 @@ Camera.prototype.update = function(deltaTimestampMillis) {
 Camera.prototype._updatePosition = function(deltaTimestampMillis) {
     "use strict";
 
-    var seconds = deltaTimestampMillis / 1000;
+    let seconds = deltaTimestampMillis / 1000;
 
     //  How far should we move in the forward direction?
-    var forwardStep = scale(this.speed*seconds, this.forwardDirection);
+    let forwardStep = scale(this.speed*seconds, this.forwardDirection);
 
     // TODO: Handle movement along the vertical direction
     // TODO: Handle movement along the horizontal direction
@@ -102,10 +102,10 @@ Camera.prototype._updateOrientation = function(deltaTimestampMillis) {
 
     // TODO: Handle roll
 
-    var deltaSeconds = deltaTimestampMillis / 1000;
+    let deltaSeconds = deltaTimestampMillis / 1000;
 
-    var yawAngle = 0;
-    var pitchAngle = 0;
+    let yawAngle = 0;
+    let pitchAngle = 0;
 
     if (!this.mouse.consumedUpdate) {
         yawAngle = -1 * this.mouseSensitivity * this.mouse.deltaX;
@@ -114,10 +114,10 @@ Camera.prototype._updateOrientation = function(deltaTimestampMillis) {
     }
 
     // Rotate so and so degrees about the upDirection
-    var yawRotation = rotate(yawAngle, this.upDirection);
-    var pitchRotation = rotate(pitchAngle, cross(this.forwardDirection, this.upDirection));
+    let yawRotation = rotate(yawAngle, this.upDirection);
+    let pitchRotation = rotate(pitchAngle, cross(this.forwardDirection, this.upDirection));
 
-    var yawThenPitchRot = mult(pitchRotation, yawRotation);
+    let yawThenPitchRot = mult(pitchRotation, yawRotation);
 
     // If we want to update the up direction (eg. roll) we should handle
     // that independently, triggered by eg. a key press. It may be sensible to
@@ -179,8 +179,8 @@ Camera.prototype.getViewMatrix = function() {
 Camera.prototype._onMouseMove = function(event) {
     "use strict";
 
-    var newX = event.clientX;
-    var newY = event.clientY;
+    let newX = event.clientX;
+    let newY = event.clientY;
 
     if (this.mouse.initialized) {
         this.mouse.deltaX = newX - this.mouse.lastX;

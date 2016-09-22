@@ -1,23 +1,23 @@
 
-var gl;
+let gl;
 
 window.onload = function init() {
     "use strict";
 
-    var canvas = document.getElementById("canvas");
+    let canvas = document.getElementById("canvas");
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) {
         alert("WebGL isn't available");
     }
 
     // Use this object to listen for key inputs
-    var keyboardState = new THREEx.KeyboardState();
+    let keyboardState = new THREEx.KeyboardState();
 
     // The camera object control's the position and orientation of the... camera
-    var camera = new Camera(keyboardState);
+    let camera = new Camera(keyboardState);
 
     // Create the root SceneNode of the scene graph.
-    var scene = new SceneNode(null);
+    let scene = new SceneNode(null);
 
     //
     // Set up our models
@@ -26,25 +26,25 @@ window.onload = function init() {
     camera.setPosition(vec3(0, 5, 10));
     camera.forwardDirection = subtract(vec3(0,0,-1), camera.position);
 
-    var ProjectionMatrix = perspective(60, canvas.width/canvas.height, 0.01, 1000);
+    let ProjectionMatrix = perspective(60, canvas.width/canvas.height, 0.01, 1000);
 
 
     // SCENE GRAPH CODE
 
     //Create the sphere and add it to the scene graph
-    var sphereData = generateSphere(16, 16);
-    var sphereNode = new SceneNode(scene);	// scene as parent
+    let sphereData = generateSphere(16, 16);
+    let sphereNode = new SceneNode(scene);	// scene as parent
     sphereNode.scale([0.5,0.5,0.5]); // Make it half the size of sphereNode
 
     // Create a non-drawable node rotating all its children around the node's point
     // in space (in this case the origo since we do not translate it). This will let us controll 
     // the oribit speed instead of it following the rotation of the parent (the sun).
-    var orbitNode = new SceneNode(scene); 
+    let orbitNode = new SceneNode(scene); 
 
     // Create another sphereNode using the same data, and set it as a child of the orbitNode
     // so it will orbit around the orbitNode's position (0,0,0).
-    var cubeData = generateCube(16, 16);
-    var cubeNode = new SceneNode(orbitNode);
+    let cubeData = generateCube(16, 16);
+    let cubeNode = new SceneNode(orbitNode);
     cubeNode.translate([3,0,0]); // Translate relative to sphereNode 1.
     cubeNode.scale([0.25,0.25,0.25]); // Make it half the size of sphereNode
 
@@ -61,30 +61,30 @@ window.onload = function init() {
 
     //  Load shaders and initialize attribute buffers
 
-    var program = initShaders(gl, "vertex-shader", "fragment-shader");
+    let program = initShaders(gl, "vertex-shader", "fragment-shader");
 
     gl.useProgram(program);
 
     // Get all relevant uniform locations
-    var ProjectionMatLocation = gl.getUniformLocation(program, "ProjectionMatrix");
-    var ViewMatLocation = gl.getUniformLocation(program, "ViewMatrix");
-    var ColorLocation = gl.getUniformLocation(program, "Color");
-    var WorldMatLocation = gl.getUniformLocation(program, "WorldMatrix");
-    var NormalMatLocation = gl.getUniformLocation(program, "NormalMatrix");
-    var TextureLocation = gl.getUniformLocation(program, "texture");
-    var UsingLightLocation = gl.getUniformLocation(program, "usingLight");
-    var LightLocation = gl.getUniformLocation(program, "light");
+    let ProjectionMatLocation = gl.getUniformLocation(program, "ProjectionMatrix");
+    let ViewMatLocation = gl.getUniformLocation(program, "ViewMatrix");
+    let ColorLocation = gl.getUniformLocation(program, "Color");
+    let WorldMatLocation = gl.getUniformLocation(program, "WorldMatrix");
+    let NormalMatLocation = gl.getUniformLocation(program, "NormalMatrix");
+    let TextureLocation = gl.getUniformLocation(program, "texture");
+    let UsingLightLocation = gl.getUniformLocation(program, "usingLight");
+    let LightLocation = gl.getUniformLocation(program, "light");
 
-    var AmbientLocation = gl.getUniformLocation(program, "ambient");
-    var DiffuseLocation = gl.getUniformLocation(program, "diffuse");
-    var SpecularLocation = gl.getUniformLocation(program, "specular");
+    let AmbientLocation = gl.getUniformLocation(program, "ambient");
+    let DiffuseLocation = gl.getUniformLocation(program, "diffuse");
+    let SpecularLocation = gl.getUniformLocation(program, "specular");
 
     // Get all relevant attribute locations
-    var vPositionLocation = gl.getAttribLocation(program, "vPosition");
-    var vNormalLocation = gl.getAttribLocation(program, "vNormal");
-    var vTexCoordLocation = gl.getAttribLocation(program, "vTexCoord");
+    let vPositionLocation = gl.getAttribLocation(program, "vPosition");
+    let vNormalLocation = gl.getAttribLocation(program, "vNormal");
+    let vTexCoordLocation = gl.getAttribLocation(program, "vTexCoord");
 
-    var programInfo = {
+    let programInfo = {
         program: program,
         attributeLocations: {
             vPosition: vPositionLocation,
@@ -124,28 +124,28 @@ window.onload = function init() {
     /* Load the data into the GPU in 2 separate buffers.
      * Avoid creation of unnecessary buffers (containing exactly the same data). */
 
-    var buffer1 = gl.createBuffer();
+    let buffer1 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer1);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten([].concat(sphereData.points, sphereData.normals, sphereData.texCoords))), gl.STATIC_DRAW);
 
-    var sphereBufferInfo = {
+    let sphereBufferInfo = {
         buffer: buffer1,
         numVertices: sphereData.numVertices
     };
 
-    var buffer2 = gl.createBuffer();
+    let buffer2 = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer2);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten([].concat(cubeData.points, cubeData.normals, cubeData.texCoords))), gl.STATIC_DRAW);
 
 
-    var cubeBufferInfo = {
+    let cubeBufferInfo = {
         buffer: buffer2,
         numVertices: cubeData.numVertices
     };
 
     // Load textures
-    var sunTexture = configureTexture(document.getElementById("sunTexture"));
-    var cubeTexture = configureTexture(new Uint8Array([0, 0, 255, 255]), 1, 1);
+    let sunTexture = configureTexture(document.getElementById("sunTexture"));
+    let cubeTexture = configureTexture(new Uint8Array([0, 0, 255, 255]), 1, 1);
 
     //
     // Add drawinfo to the SceneNodes
@@ -186,17 +186,17 @@ window.onload = function init() {
     // Set up and start the render loop
     //
 
-    var prevTimestamp = 0;
+    let prevTimestamp = 0;
 
     function step(timestamp) {
-        var deltaTimestamp = timestamp - prevTimestamp;
+        let deltaTimestamp = timestamp - prevTimestamp;
         prevTimestamp = timestamp;
 
-        var seconds = timestamp/1000;
-        var diffSeconds = deltaTimestamp/1000;
+        let seconds = timestamp/1000;
+        let diffSeconds = deltaTimestamp/1000;
 
         camera.update(deltaTimestamp);
-        var ViewMatrix = camera.getViewMatrix();
+        let ViewMatrix = camera.getViewMatrix();
 
 
         // Rotate sphereNode around itself
@@ -236,12 +236,12 @@ function render(drawableObjects, viewMatLocation, ViewMatrix) {
 function renderDrawable(drawable, ViewMatrix) {
     "use strict";
 
-    var programInfo = drawable.drawInfo.programInfo;
-    var attributeLocations = programInfo.attributeLocations;
-    var uniformLocations = programInfo.uniformLocations;
+    let programInfo = drawable.drawInfo.programInfo;
+    let attributeLocations = programInfo.attributeLocations;
+    let uniformLocations = programInfo.uniformLocations;
 
-    var bufferInfo = drawable.drawInfo.bufferInfo;
-    var uniformInfo = drawable.drawInfo.uniformInfo;
+    let bufferInfo = drawable.drawInfo.bufferInfo;
+    let uniformInfo = drawable.drawInfo.uniformInfo;
 
     // We will use out program on a given buffer
     gl.useProgram(programInfo.program);
@@ -270,8 +270,8 @@ function renderDrawable(drawable, ViewMatrix) {
 
     gl.uniform4fv(uniformLocations.color, new Float32Array(uniformInfo.color));
 
-    var NormalMatrix = transpose(inverse4(mult(ViewMatrix, drawable._worldMatrix)));
-    var NormalMatrix3 = mat3(vec3(NormalMatrix[0]), vec3(NormalMatrix[1]), vec3(NormalMatrix[2]));
+    let NormalMatrix = transpose(inverse4(mult(ViewMatrix, drawable._worldMatrix)));
+    let NormalMatrix3 = mat3(vec3(NormalMatrix[0]), vec3(NormalMatrix[1]), vec3(NormalMatrix[2]));
 
     gl.uniformMatrix3fv(uniformLocations.normalMatrix, false, flatten(NormalMatrix3));
 
@@ -299,7 +299,7 @@ function renderDrawable(drawable, ViewMatrix) {
 function configureTexture(image, width, height) {
     "use strict";
 
-    var texture = gl.createTexture();
+    let texture = gl.createTexture();
     gl.bindTexture( gl.TEXTURE_2D, texture );
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 

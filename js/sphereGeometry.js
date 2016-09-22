@@ -11,19 +11,18 @@
  * @return {Object} an object containing the generated geometry
  */
 function generateSphere(numSphereStacks, numSphereSlices) {
-    "use strict";
 
-    var stackAngleStep = Math.PI/(numSphereStacks);
-    var sliceAngleStep = (Math.PI*2)/numSphereSlices;
+    let stackAngleStep = Math.PI/(numSphereStacks);
+    let sliceAngleStep = (Math.PI*2)/numSphereSlices;
 
-    var points = [];
-    var normals = [];
-    var texCoords = [];
+    let points = [];
+    let normals = [];
+    let texCoords = [];
 
     // Set radius to 0.5 to generate a sphere with diameter 1.0
-    var radius = 0.5;
+    let radius = 0.5;
 
-    for (var i=0; i<numSphereSlices; i++) {
+    for (let i=0; i<numSphereSlices; i++) {
         points.push(vec4(0.0, radius, 0.0, 1.0));
         points.push(getCoordinate((i+1)*sliceAngleStep, stackAngleStep, radius));
         points.push(getCoordinate((i+0)*sliceAngleStep, stackAngleStep, radius));
@@ -32,7 +31,7 @@ function generateSphere(numSphereStacks, numSphereSlices) {
         texCoords.push(vec2((i+1)/numSphereStacks, 1/numSphereSlices));
         texCoords.push(vec2((i+0)/numSphereStacks, 1/numSphereSlices));
 
-        for (var j=1; j<numSphereStacks-1; j++) {
+        for (let j=1; j<numSphereStacks-1; j++) {
             points.push(getCoordinate((i+0)*sliceAngleStep, stackAngleStep*(j+0), radius));
             points.push(getCoordinate((i+1)*sliceAngleStep, stackAngleStep*(j+0), radius));
             points.push(getCoordinate((i+1)*sliceAngleStep, stackAngleStep*(j+1), radius));
@@ -60,7 +59,7 @@ function generateSphere(numSphereStacks, numSphereSlices) {
     }
 
     // Generate vertex normals
-    for (var i = 0; i < points.length; ++i) {
+    for (let i = 0; i < points.length; ++i) {
         normals.push(normalize(vec3(points[i])));
     }
 
@@ -86,9 +85,9 @@ function generateSphere(numSphereStacks, numSphereSlices) {
 function getCoordinate(longitude, latitude, radius) {
     "use strict";
 
-    var y = Math.cos(latitude);
-    var x = Math.cos(longitude) * Math.sin(latitude);
-    var z = Math.sin(longitude) * Math.sin(latitude);
+    let y = Math.cos(latitude);
+    let x = Math.cos(longitude) * Math.sin(latitude);
+    let z = Math.sin(longitude) * Math.sin(latitude);
 
     return vec4(scale(radius, vec3(x, y, z)), 1.0);
 }
